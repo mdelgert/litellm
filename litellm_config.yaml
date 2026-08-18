@@ -1,0 +1,125 @@
+# LiteLLM Proxy Configuration
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+
+# ── General Settings ─────────────────────────────────────────
+general_settings:
+  master_key: "os.environ/LITELLM_MASTER_KEY"  # set in .env
+  database_url: "os.environ/DATABASE_URL"
+
+  # Store spend/key data in Postgres
+  store_model_in_db: true
+
+  # Allow teams / users to be managed via the UI
+  allow_user_auth: true
+
+  # Security: disable routes you don't need
+  # disable_reset_budget: true
+
+# ── Router / Load Balancing ──────────────────────────────────
+router_settings:
+  routing_strategy: latency-based-routing  # or: simple-shuffle, cost-based
+  redis_host: "os.environ/REDIS_HOST"
+  redis_port: 6379
+  redis_password: "os.environ/REDIS_PASSWORD"
+
+# ── Caching ──────────────────────────────────────────────────
+litellm_settings:
+  # Enable semantic / exact caching via Redis
+  cache: true
+  cache_params:
+    type: redis
+    host: "os.environ/REDIS_HOST"
+    port: 6379
+    password: "os.environ/REDIS_PASSWORD"
+    ttl: 600           # seconds – cache TTL for exact matches
+    # semantic_cache: true   # uncomment to enable semantic caching
+
+  # Drop unsupported params instead of erroring
+  drop_params: true
+
+  # Set a global request timeout (seconds)
+  request_timeout: 600
+
+  # Fallback behaviour
+  num_retries: 3
+  fallbacks:
+    - model: gpt-4o
+      fallbacks: [gpt-4-turbo, gpt-3.5-turbo]
+
+  # Callbacks – add "langfuse", "s3", "prometheus", etc. as needed
+  success_callback: []
+  failure_callback: []
+
+# ── Rate Limits (global defaults) ────────────────────────────
+# Override per-key or per-user via the UI or API
+# max_budget: 10           # USD – total lifetime budget
+# budget_duration: "1d"    # reset interval: 1d, 7d, 30d, etc.
+
+# ── Model Definitions ─────────────────────────────────────────
+# Add or remove models to match your provider keys.
+# Use "os.environ/VAR_NAME" to read API keys from the environment.
+model_list:
+
+  # ── OpenAI ──────────────────────────────────────────────────
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: gpt-4-turbo
+    litellm_params:
+      model: openai/gpt-4-turbo
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: openai/gpt-3.5-turbo
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: text-embedding-3-small
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  # ── Anthropic ───────────────────────────────────────────────
+  - model_name: claude-3-5-sonnet
+    litellm_params:
+      model: anthropic/claude-3-5-sonnet-20241022
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+
+  - model_name: claude-3-haiku
+    litellm_params:
+      model: anthropic/claude-3-haiku-20240307
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+
+  # ── Azure OpenAI (uncomment if using Azure) ──────────────────
+  # - model_name: azure-gpt-4o
+  #   litellm_params:
+  #     model: azure/gpt-4o
+  #     api_key: "os.environ/AZURE_API_KEY"
+  #     api_base: "os.environ/AZURE_API_BASE"
+  #     api_version: "os.environ/AZURE_API_VERSION"
+  #     deployment_id: YOUR_DEPLOYMENT_NAME
+
+  # ── Groq ─────────────────────────────────────────────────────
+  - model_name: llama-3.1-70b
+    litellm_params:
+      model: groq/llama-3.1-70b-versatile
+      api_key: "os.environ/GROQ_API_KEY"
+
+  # ── Google Gemini ────────────────────────────────────────────
+  - model_name: gemini-1.5-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro
+      api_key: "os.environ/GEMINI_API_KEY"
+
+  # ── Cohere ───────────────────────────────────────────────────
+  - model_name: command-r-plus
+    litellm_params:
+      model: cohere/command-r-plus
+      api_key: "os.environ/COHERE_API_KEY"
