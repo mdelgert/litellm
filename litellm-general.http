@@ -1,0 +1,170 @@
+### ===========================================================
+### LiteLLM – General Checks
+### ===========================================================
+
+@baseUrl = http://localhost:4000
+@apiKey = {{LITELLM_MASTER_KEY}}
+@model = model-router
+
+
+# ─────────────────────────────────────────────────────────────
+# HEALTH & STATUS
+# ─────────────────────────────────────────────────────────────
+
+### Health – liveness probe
+GET {{baseUrl}}/health/liveliness
+
+###
+
+### Health – readiness probe
+GET {{baseUrl}}/health/readiness
+
+###
+
+### Health – full check (calls each model provider)
+GET {{baseUrl}}/health
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Server info / version
+GET {{baseUrl}}/
+Authorization: Bearer {{apiKey}}
+
+
+# ─────────────────────────────────────────────────────────────
+# MODELS
+# ─────────────────────────────────────────────────────────────
+
+### List all models (OpenAI-compatible)
+GET {{baseUrl}}/v1/models
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Model info – detailed config for all models
+GET {{baseUrl}}/model/info
+Authorization: Bearer {{apiKey}}
+
+
+# ─────────────────────────────────────────────────────────────
+# CHAT COMPLETIONS
+# ─────────────────────────────────────────────────────────────
+
+### Basic chat completion
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user",   "content": "Say hello in one sentence." }
+  ]
+}
+
+###
+
+### Multi-turn conversation
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user",      "content": "My name is Alice." },
+    { "role": "assistant", "content": "Nice to meet you, Alice!" },
+    { "role": "user",      "content": "What is my name?" }
+  ]
+}
+
+###
+
+### Streaming response
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "stream": true,
+  "messages": [
+    { "role": "user", "content": "Count from 1 to 5." }
+  ]
+}
+
+###
+
+### JSON mode
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "response_format": { "type": "json_object" },
+  "messages": [
+    { "role": "user", "content": "Return a JSON object with keys name and age for a fictional person." }
+  ]
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# SPEND / BUDGET
+# ─────────────────────────────────────────────────────────────
+
+### Spend per model
+GET {{baseUrl}}/spend/models
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Spend per key
+GET {{baseUrl}}/spend/keys
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Spend per user
+GET {{baseUrl}}/spend/users
+Authorization: Bearer {{apiKey}}
+
+
+# ─────────────────────────────────────────────────────────────
+# KEY MANAGEMENT
+# ─────────────────────────────────────────────────────────────
+
+### List all keys
+GET {{baseUrl}}/key/list
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Generate a new API key
+POST {{baseUrl}}/key/generate
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "models": ["{{model}}"],
+  "duration": "24h",
+  "key_alias": "test-key",
+  "metadata": { "created_by": "http-test-file" }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# CONFIG
+# ─────────────────────────────────────────────────────────────
+
+### Get current running config
+GET {{baseUrl}}/config/yaml
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Get callback settings
+GET {{baseUrl}}/get/config/callbacks
+Authorization: Bearer {{apiKey}}

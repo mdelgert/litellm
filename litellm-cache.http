@@ -1,0 +1,98 @@
+### ===========================================================
+### LiteLLM – Cache Tests
+### Run "Cache warm-up" first, then "Cache hit check".
+### Check litellm logs: docker compose logs litellm --tail 50
+### ===========================================================
+
+@baseUrl = http://localhost:4000
+@apiKey = {{LITELLM_MASTER_KEY}}
+@model = gpt-5.4-mini
+
+
+# ─────────────────────────────────────────────────────────────
+# CACHE STATUS
+# ─────────────────────────────────────────────────────────────
+
+### Cache ping – confirms Redis is reachable from LiteLLM
+GET {{baseUrl}}/cache/ping
+Authorization: Bearer {{apiKey}}
+
+
+# ─────────────────────────────────────────────────────────────
+# EXACT CACHE TEST
+# Step 1: run warm-up, Step 2: run hit check
+# Expect: hit check returns same content faster, logged as cache hit
+# ─────────────────────────────────────────────────────────────
+
+### Step 1 – Cache warm-up (sends request to provider)
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Reply with exactly this text and nothing else: cache-test-12345" }
+  ]
+}
+
+###
+
+### Step 2 – Cache hit check (identical request – should serve from Redis)
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Reply with exactly this text and nothing else: cache-test-12345" }
+  ]
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# CACHE MISS CONTROLS
+# These should NOT hit cache – confirms cache key boundaries
+# ─────────────────────────────────────────────────────────────
+
+### Miss – different prompt content
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Reply with exactly this text and nothing else: cache-test-99999" }
+  ]
+}
+
+###
+
+### Miss – different model (same prompt as warm-up)
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "gpt-5.4-mini",
+  "messages": [
+    { "role": "user", "content": "Reply with exactly this text and nothing else: cache-test-12345" }
+  ]
+}
+
+###
+
+### Miss – added temperature param (changes cache key)
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "temperature": 0.5,
+  "messages": [
+    { "role": "user", "content": "Reply with exactly this text and nothing else: cache-test-12345" }
+  ]
+}
