@@ -85,14 +85,14 @@ services:
       DISABLE_SPEND_LOGS: ${DISABLE_SPEND_LOGS:-false}
 
       # LLM provider keys (add/remove as needed)
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       AZURE_API_KEY: ${AZURE_API_KEY:-}
       AZURE_API_BASE: ${AZURE_API_BASE:-}
       AZURE_API_VERSION: ${AZURE_API_VERSION:-}
-      GROQ_API_KEY: ${GROQ_API_KEY:-}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      COHERE_API_KEY: ${COHERE_API_KEY:-}
+      # OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # GROQ_API_KEY: ${GROQ_API_KEY:-}
+      # GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      # COHERE_API_KEY: ${COHERE_API_KEY:-}
 
     command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "8"]
     healthcheck:
