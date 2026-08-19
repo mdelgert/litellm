@@ -1,0 +1,108 @@
+### ===========================================================
+### Direct OpenAI API examples
+### Test against: https://api.openai.com
+### ===========================================================
+
+@baseUrl = https://api.openai.com
+@apiKey = {{OPENAI_API_KEY}}
+@model = gpt-4o-mini
+
+# Add this in VS Code user settings (Settings JSON):
+# "rest-client.environmentVariables": {
+#   "local": {
+#     "OPENAI_API_KEY": "sk-...your-key..."
+#   }
+# }
+# Then the value above resolves from {{OPENAI_API_KEY}}.
+
+# ─────────────────────────────────────────────────────────────
+# MODELS
+# ─────────────────────────────────────────────────────────────
+
+### List available models
+GET {{baseUrl}}/v1/models
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Simple chat completion
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Hello! Reply in one sentence." }
+  ]
+}
+
+###
+
+### Chat completion with system + user prompt
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Summarize the benefits of using API-first services." }
+  ],
+  "temperature": 0.7
+}
+
+###
+
+### Streaming response
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Count from 1 to 5." }
+  ],
+  "stream": true
+}
+
+###
+
+### JSON mode
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "response_format": { "type": "json_object" },
+  "messages": [
+    { "role": "user", "content": "Return a JSON object with keys name and age for a fictional person." }
+  ]
+}
+
+###
+
+### Embeddings
+POST {{baseUrl}}/v1/embeddings
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "text-embedding-3-small",
+  "input": "The quick brown fox jumps over the lazy dog."
+}
+
+###
+
+### Responses API (newer OpenAI format)
+POST {{baseUrl}}/v1/responses
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "input": "Write a two-sentence greeting to a new developer."
+}
