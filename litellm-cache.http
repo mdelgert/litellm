@@ -8,6 +8,13 @@
 @apiKey = {{LITELLM_MASTER_KEY}}
 @model = gpt-5.4-mini
 
+# Add this in VS Code user settings (Settings JSON):
+# "rest-client.environmentVariables": {
+#   "local": {
+#     "LITELLM_MASTER_KEY": "your-master-key-here"
+#   }
+# }
+# Then the value above will resolve from {{LITELLM_MASTER_KEY}}.
 
 # ─────────────────────────────────────────────────────────────
 # CACHE STATUS
