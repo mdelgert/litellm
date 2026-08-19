@@ -1,0 +1,101 @@
+### ===========================================================
+### Ollama Cloud examples
+### Use the hosted Ollama Cloud API: https://ollama.com
+### ===========================================================
+
+@baseUrl = https://ollama.com
+@apiKey = {{OLLAMA_API_KEY}}
+#@model = llama3.1
+@model = gpt-oss:20b
+
+# Add this in VS Code user settings (Settings JSON):
+# "rest-client.environmentVariables": {
+#   "local": {
+#     "OLLAMA_API_KEY": "your-api-key-here"
+#   }
+# }
+# Then the value above resolves from {{OLLAMA_API_KEY}}.
+
+# NOTE:
+# Ollama Cloud uses the same OpenAI-compatible request format as Ollama,
+# but you usually send your API key in Authorization: Bearer header when
+# using the hosted service. If your endpoint differs, update @baseUrl.
+
+# ─────────────────────────────────────────────────────────────
+# MODELS
+# ─────────────────────────────────────────────────────────────
+
+### List available models
+GET {{baseUrl}}/api/tags
+Authorization: Bearer {{apiKey}}
+
+###
+
+### Generate text
+POST {{baseUrl}}/api/generate
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "prompt": "Write a short welcome message for a developer using Ollama Cloud.",
+  "stream": false
+}
+
+###
+
+### Chat completion
+POST {{baseUrl}}/api/chat
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Explain what a managed LLM service is in 2 sentences." }
+  ],
+  "stream": false
+}
+
+###
+
+### Streaming chat completion
+POST {{baseUrl}}/api/chat
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Count from 1 to 5." }
+  ],
+  "stream": true
+}
+
+###
+
+### OpenAI-compatible chat style on Ollama Cloud
+POST {{baseUrl}}/v1/chat/completions
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Reply with one short sentence." }
+  ],
+  "temperature": 0.7
+}
+
+###
+
+### OpenAI-compatible embeddings
+POST {{baseUrl}}/v1/embeddings
+Authorization: Bearer {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "nomic-embed-text",
+  "input": "This is a sample embedding request for Ollama Cloud."
+}
