@@ -1,0 +1,116 @@
+### ===========================================================
+### Azure AI Foundry examples
+### Matches the documented OpenAI-compatible endpoint pattern:
+### https://<resource>.services.ai.azure.com/openai/v1
+### ===========================================================
+
+@baseUrl = https://{{AZURE_FOUNDRY_RESOURCE}}.services.ai.azure.com/openai/v1
+@apiKey = {{AZURE_FOUNDRY_API_KEY}}
+#@model = model-router
+@model = gpt-5.5
+
+# Add this in VS Code user settings (Settings JSON):
+# "rest-client.environmentVariables": {
+#   "local": {
+#     "AZURE_FOUNDRY_RESOURCE": "your-resource-name",
+#     "AZURE_FOUNDRY_API_KEY": "your-api-key"
+#   }
+# }
+# Then the value above resolves from {{AZURE_FOUNDRY_API_KEY}}.
+#
+# Python equivalent from the docs:
+# endpoint = "https://<resource>.services.ai.azure.com/openai/v1"
+# client = OpenAI(base_url=endpoint, api_key=api_key)
+# completion = client.chat.completions.create(model="model-router", messages=[{"role": "user", "content": "What is the capital of France?"}])
+
+# ─────────────────────────────────────────────────────────────
+# OPENAI-COMPATIBLE FOUNDRY ENDPOINTS
+# ─────────────────────────────────────────────────────────────
+
+### List available models
+GET {{baseUrl}}/models
+api-key: {{apiKey}}
+
+###
+
+### Chat completion
+POST {{baseUrl}}/chat/completions
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Hello" }
+  ]
+}
+
+### Chat completion
+POST {{baseUrl}}/chat/completions
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "What is the capital of France?" }
+  ]
+}
+
+###
+
+### Chat completion with system prompt
+POST {{baseUrl}}/chat/completions
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "system", "content": "You are a helpful Azure AI Foundry assistant." },
+    { "role": "user", "content": "Summarize the benefits of self-hosted AI gateways in 3 bullet points." }
+  ],
+  "temperature": 0.7
+}
+
+###
+
+### Streaming chat completion
+POST {{baseUrl}}/chat/completions
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Count from 1 to 5." }
+  ],
+  "stream": true
+}
+
+###
+
+### JSON mode response
+POST {{baseUrl}}/chat/completions
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "messages": [
+    { "role": "user", "content": "Return a JSON object with keys name and age for a fictional person." }
+  ],
+  "response_format": { "type": "json_object" }
+}
+
+###
+
+### Embeddings
+POST {{baseUrl}}/embeddings
+api-key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "model": "{{model}}",
+  "input": "This is a sample embedding request for Azure AI Foundry."
+}
